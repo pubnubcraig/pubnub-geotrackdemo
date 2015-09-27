@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <meta charset=utf-8 />
+    <title>EON Maps</title>
+    <meta name='viewport' content='initial-scale=18,maximum-scale=25,user-scalable=yes' />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position:absolute;
+        top:0;
+        bottom:0;
+        width:100%;
+      }
+    </style>
+
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+    <script src="https://cdn.pubnub.com/pubnub-3.7.14.js"></script>
+    <script type="text/javascript" src="http://pubnub.github.io/eon/lib/eon.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://pubnub.github.io/eon/lib/eon.css" />
+
+  </head>
+  <body>
+    <div id='map' class="map"></div>
+    <script>
+
+    var channel = 'pnrace';
+
+    var pubnub = PUBNUB({
+      publish_key: "pub-c-7a1896a7-c8d7-4a44-9815-e033e5487246",
+      subscribe_key: "sub-c-fae8895e-6344-11e5-9f3a-0693d8625082"
+    });
+
+    pubnub.subscribe({
+      channel: channel,
+      message: function(m) {JSON.stringify(m)},
+      error: function (error) {
+        // Handle error here
+        console.log(JSON.stringify(error));
+      }
+    });
+  
+    var eonmap = eon.map({
+        pubnub: pubnub,
+        id: 'map',
+        mb_id: 'cvconover.cif1wqgpd0y01sqm525f5uxbc',
+        mb_token: 'pk.eyJ1IjoiY3Zjb25vdmVyIiwiYSI6ImNpZjF3cWkwNDB4MDF0bW01NXg1NHpka2UifQ.nJOJsZqYX3Ktg3R8sVXvvg',
+        channel: channel,
+        options: {
+          zoomAnimation: true,
+        },
+        message: function (data) {
+          eonmap.setView(data[0].latlng, 20);
+        }
+      });
+    </script>
+  </body>
+</html>
